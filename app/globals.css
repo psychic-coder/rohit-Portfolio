@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  @apply bg-base text-ink antialiased;
+  font-feature-settings: "ss01" on, "cv11" on;
+}
+
+::selection {
+  background: rgba(57, 255, 136, 0.25);
+  color: #e8e8ea;
+}
+
+/* Visible keyboard focus, invisible mouse focus */
+:focus-visible {
+  outline: 2px solid #39ff88;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Subtle grain overlay for depth — pure CSS, no image request */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Custom cursor only on fine pointers; hide the native one on interactive hover targets */
+@media (pointer: fine) {
+  .has-custom-cursor,
+  .has-custom-cursor a,
+  .has-custom-cursor button {
+    cursor: none;
+  }
+}
+
+/* Terminal-style eyebrow labels */
+.eyebrow {
+  @apply font-mono text-xs uppercase tracking-[0.2em] text-signal;
+}
+.eyebrow::before {
+  content: "// ";
+  color: #5b5b66;
+}
+
+/* Hairline dividers between sections */
+.section-rule {
+  @apply mx-auto max-w-wrap border-t border-line;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
