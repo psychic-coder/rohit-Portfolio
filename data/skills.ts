@@ -13,7 +13,7 @@ export const skillGroups: SkillGroup[] = [
   {
     id: "backend",
     label: "Backend",
-    items: ["NestJS", "Express", "Flask", "FastAPI", "Ruby on Rails"],
+    items: ["Node.js", "NestJS", "Express", "REST APIs", "JWT Auth", "Flask", "FastAPI", "Ruby on Rails"],
   },
   {
     id: "data",
@@ -31,17 +31,20 @@ export const skillGroups: SkillGroup[] = [
       "k6 (load/chaos)",
       "New Relic",
       "OpenTelemetry",
+      "Git",
+      "Postman",
+      "Figma",
     ],
   },
   {
     id: "ai",
     label: "AI / ML Tooling",
-    items: ["LangChain", "Anthropic API", "OpenAI API", "Whisper"],
+    items: ["LangChain", "Anthropic API", "OpenAI API", "Whisper", "Pandas"],
   },
   {
     id: "frontend",
     label: "Frontend",
-    items: ["React", "Next.js", "React Native", "Vue.js", "Tailwind CSS"],
+    items: ["React", "Next.js", "React Native (Expo)", "Vue.js", "Tailwind CSS", "Material-UI", "Framer Motion"],
   },
   {
     id: "systems",

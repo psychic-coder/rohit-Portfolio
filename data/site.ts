@@ -1,10 +1,10 @@
 export const site = {
   name: "Rohit Ganguly",
   domain: "https://rohitganguly.dev",
-  email: "rohit@rohitganguly.dev",
+  email: "rohitganguly450@gmail.com",
   github: "https://github.com/psychic-coder",
   // TODO: drop in your LinkedIn URL
-  linkedin: "#",
+  linkedin: "https://www.linkedin.com/in/rohit-ganguly-42685521b/",
   // TODO: place resume.pdf in /public and update if the filename differs
   resume: "/resume.pdf",
   tagline: "Systems-minded full-stack engineer — distributed systems, graph-augmented AI, developer tooling.",

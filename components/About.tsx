@@ -23,14 +23,14 @@ export default function About() {
             </p>
             <p>
               Away from projects: developer tooling (I&apos;ve shipped VS Code and Eclipse
-              extensions), and hands-on cloud infrastructure — I currently own EC2, RDS, S3
+              extensions), and hands-on cloud infrastructure — I  owned EC2, RDS, S3
               and IAM setups directly at my internship.
             </p>
           </div>
 
           <dl className="h-fit space-y-4 rounded-md border border-line bg-surface p-6 font-mono text-sm">
             <div>
-              <dt className="text-[10px] uppercase tracking-widest text-ink-faint">CGPA</dt>
+              <dt className="text-[10px] uppercase tracking-widest text-ink-faint">GPA (First Semester)</dt>
               <dd className="mt-1 text-2xl font-bold text-signal">9.06</dd>
               <dd className="text-xs text-ink-dim">Dean&apos;s List</dd>
             </div>

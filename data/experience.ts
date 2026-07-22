@@ -10,9 +10,9 @@ export interface Experience {
 // NOTE: periods marked TODO are placeholders — fill in real month/year ranges.
 export const experience: Experience[] = [
   {
-    company: "CodeVector", // TODO: replace with the company name when you can share it
+    company: "CodeVector Labs", 
     role: "SDE Intern (Remote)",
-    period: "July 2026 – July 2026", // TODO: e.g. "May 2026 – Present"
+    period: "July 2026 – July 2026", 
     current: false,
     bullets: [
       "Direct, full ownership of AWS infrastructure — EC2, RDS, S3 and IAM — provisioning, hardening and operating it, not just deploying to it.",
@@ -23,21 +23,26 @@ export const experience: Experience[] = [
   {
     company: "Betatest Solutions",
     role: "SDE Intern",
-    period: "November 2025 - April 2026", // TODO: add dates
+    period: "November 2025 - April 2026",
     bullets: [
-      "55+ PRs merged into a production React Native app, working inside a real CI/CD pipeline on Azure DevOps.",
-      "Exposure to performance discipline in practice: k6 load tests and New Relic monitoring on NestJS/Next.js services.",
+      "Shipped full Settings, Edit Profile, biometric auth, and image picker features in React Native (Expo) to production on iOS and Android.",
+      "Built modular RESTful APIs in NestJS (TypeScript) — activity-type filtering, CSV report export, soft-delete cleanup, and Cron-based task automation.",
+      "Engineered end-to-end password reset and OTP verification flows (mail dispatch, token validation, UI) spanning Next.js frontend and NestJS backend.",
+      "Implemented i18n (English, PT-BR), transactional email templates, and push/email notification pipelines for real-time user alerts.",
+      "Optimized backend performance via database schema migrations and load testing (k6); monitored production health with New Relic and Azure Pipelines (CI/CD); merged 55+ PRs across mono-repo.",
     ],
-    stack: ["React Native", "NestJS", "Next.js", "Azure DevOps", "k6", "New Relic"],
+    stack: ["React Native (Expo)", "Next.js", "NestJS", "TypeScript", "TailwindCSS", "Azure DevOps", "PostgreSQL", "Redis"],
   },
   {
     company: "Coding Jr",
-    role: "SDE Intern",
-    period: "May 2025 - August 2025", // TODO: add dates
+    role: "Full-Stack Developer Intern",
+    period: "June 2025 - August 2025",
     bullets: [
-      "Built developer tooling: VS Code and Eclipse extensions, working against real editor extension APIs and internals.",
-      "Integrated Redis-backed features and AI tooling into the extension workflow.",
+      "Built the Planto VS Code and Eclipse extensions end-to-end: chat interface, agent mode, image-to-code, and Figma-to-code generation workflows.",
+      "Engineered @file workspace attachment with Redis caching for low-latency context handling in the AI coding assistant.",
+      "Redesigned the Planto marketing website and CodingPro platform with improved UI/UX, responsiveness, and Figma-driven design iterations.",
+      "Contributed to an AI-assisted resume builder with section duplication, inline bullet editing, and LLM-powered formatting suggestions.",
     ],
-    stack: ["VS Code Extension API", "Eclipse", "Redis", "AI tooling"],
+    stack: ["VS Code Extension API", "Next.js", "Node.js", "Redis", "Figma"],
   },
 ];
