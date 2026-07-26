@@ -9,7 +9,7 @@ const statusLabel: Record<Project["status"], string> = {
 };
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const featured = index === 0; // ShardRoute gets hero-level treatment
+  const featured = index === 0; // first project gets hero-level treatment
   return (
     <SectionReveal delay={index * 0.06} className={featured ? "md:col-span-2" : ""}>
       <Link

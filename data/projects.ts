@@ -34,6 +34,84 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    slug: "matching-engine",
+    title: "Limit Order Book Matching Engine",
+    kicker: "Real-Time Exchange Core",
+    status: "shipped",
+    summary:
+      "A Go matching engine with strict price-time priority, one lock-free order book per symbol, write-ahead logged to Redis Streams. 2,300 orders/sec sustained at 0.11 ms p50, and a byte-identical book after kill -9.",
+    problem:
+      "A matching engine is one of the few systems where correctness is not negotiable and latency is the product. Two orders at the same price must fill in the order they arrived, an acknowledged fill can never be lost, and a stale quote is a quote someone else picks off. The hard part isn't the matching algorithm — it's staying exact under concurrency, surviving a crash without inventing or losing state, and refusing work honestly when the durability layer is down.",
+    architecture: [
+      "Each symbol's order book is owned by exactly one goroutine; orders reach it through a buffered channel. The book itself contains no locks, no atomics, and no synchronization at all — nothing else can ever touch it. Reads go through the same channel for the same reason.",
+      "Prices are integer ticks, never floats: matching is driven by equality and ordering on price, so an approximate representation would make the engine's central decision approximate. Decimal strings are parsed to ticks once at the API boundary without ever constructing a float.",
+      "Time priority is a sequence number assigned by the single writer, not a wall-clock timestamp — clocks move backwards under NTP and collide at nanosecond resolution. A counter is a total order by construction, and reproducible during replay.",
+      "Price levels are a hash map plus a sorted linked list with a cached best pointer: O(1) best bid/ask, O(1) add at an existing level, O(1) teardown, and ordered iteration for sweeps and snapshots. New-level insert is O(k) from the touch — benchmarked adversarially at 5.7 µs to price the trade-off honestly.",
+      "The WAL logs commands, not outcomes, because matching is deterministic — replaying the same command sequence rebuilds the same book including queue positions. Writes are group-committed: one Redis round-trip amortized across every command that arrived while the previous batch was in flight, so the batch grows exactly when load rises.",
+      "Durability is fail-closed. When the WAL goes down the engine sheds writes with 503 rather than acknowledging fills it can't recover; /health flips to 503 so the load balancer pulls the instance. A 15s injected outage shed 12,010 orders cleanly while reads stayed 100% available at 1.48 ms p99, and intake recovered in 1 ms.",
+      "Market data is snapshot-then-delta over WebSocket with per-message sequence numbers and bounded per-client buffers — a consumer that can't keep up is disconnected rather than allowed to backpressure the match loop. 599,950 frames to 50 concurrent clients with zero sequence gaps.",
+      "The single-writer model was benchmarked against the obvious alternative rather than assumed: a per-book mutex is actually faster for synchronous request/reply (272 ns vs 904 ns at 8 symbols). The shard model earns its place on group-commit batching, symbol isolation, non-blocking reads, and deterministic replay ordering — not raw round-trip speed.",
+    ],
+    metrics: [
+      { value: 0.11, decimals: 2, suffix: " ms", label: "p50 order-to-ack (7.38 ms p99)", tone: "chaos" },
+      { value: 4.15, decimals: 2, suffix: " ms", label: "p99 order-to-broadcast, 50 WS clients", tone: "chaos" },
+      { value: 2314, label: "orders/sec sustained, zero rejections", tone: "signal" },
+      { value: 1.2, decimals: 1, suffix: " s", label: "kill -9 recovery, byte-identical book", tone: "signal" },
+    ],
+    stack: [
+      "Go",
+      "Redis Streams",
+      "WebSocket",
+      "Next.js",
+      "k6",
+      "Fly.io",
+      "Upstash",
+      "Docker",
+    ],
+    github: "https://github.com/psychic-coder/Real-Time-Limit-Order-Book-Matching-Engine",
+    liveUrl: "#",
+    liveUrlNote:
+      "Live deploy pending — GitHub has the full load-test and crash-recovery harness.",
+  },
+  {
+    slug: "fraud-detection",
+    title: "Fraud & Ring Detection Engine",
+    kicker: "Real-Time Streaming Risk Pipeline",
+    status: "shipped",
+    summary:
+      "Scores every transaction in real time against three independent fraud signals — an online-learning model, a Neo4j ring detector, and a Qdrant synthetic-identity check — then merges them into one ALLOW / REVIEW / DECLINE decision. Twelve containers, one docker compose up.",
+    problem:
+      "A single fraud signal is either too noisy to act on or too conservative to catch anything. A behavioral model flags an odd transaction but can't see that six accounts share one device; a graph finds the ring but not the one-off anomaly; neither notices a synthetic identity reusing the same fingerprint. The engineering problem is running all three concurrently over one event stream, at transaction speed, and still returning a decision when one of them is down.",
+    architecture: [
+      "A PaySim-grounded simulator emits payment events into a Redis Stream. Three consumer groups read the same stream in parallel and produce independent signals, so adding a detector never slows the ones already there.",
+      "Behavioral signal: a River online logistic classifier does predict_proba_one then learn_one on every transaction's ground-truth label — the model adapts as fraud patterns drift instead of going stale between retrains.",
+      "Relational signal: accounts, devices and IPs are upserted into Neo4j, and a scheduled Louvain community-detection pass surfaces dense clusters of accounts sharing devices and IPs. A community counts as a ring only at size ≥ 3 and intra-community density ≥ 0.4 — the size floor drops coincidental pairs, the density floor drops communities Louvain groups for modularity that aren't actually collusive.",
+      "Identity signal: each transaction is feature-hash embedded and looked up in Qdrant by cosine nearest neighbor. The 0.92 threshold is deliberately high — genuinely distinct fingerprints rarely exceed ~0.9, so it targets real near-duplicate reuse rather than manufacturing false positives.",
+      "A NestJS orchestrator consumes the scored stream and enriches each event by calling the graph and similarity services over HTTP, each wrapped in an opossum circuit breaker. The merge policy refuses to auto-decline on one soft signal: a very high ML score declines alone, a merely suspicious score declines only when corroborated by a structural signal, and anything mildly suspicious goes to human review.",
+      "Fail-open with degraded scoring, implemented rather than improvised: when an enrichment service goes slow or dies the breaker trips, the orchestrator drops that signal, stamps degraded: true on the decision, and keeps deciding on what's left. No transaction stalls waiting on a dead dependency.",
+      "Every application service is stateless — all shared state lives in Redis, Neo4j or Qdrant, never a process global — so replicas scale horizontally and Redis consumer groups hand disjoint entries to each one with no double-processing.",
+      "Decisions stream to a Next.js dashboard over WebSocket with auto-reconnect: live feed, flagged panel, force-directed ring visualization, and throughput/latency metrics. The whole stack — Redis, Neo4j, Qdrant, five services and a k6 runner — comes up from a single compose file with nothing installed on the host.",
+    ],
+    metrics: [],
+    stack: [
+      "Python",
+      "FastAPI",
+      "River",
+      "NestJS",
+      "TypeScript",
+      "Redis Streams",
+      "Neo4j",
+      "Qdrant",
+      "Next.js",
+      "k6",
+      "Docker Compose",
+    ],
+    github: "https://github.com/psychic-coder/Real-Time-Fraud-Detection-Engine",
+    liveUrl: "#",
+    liveUrlNote:
+      "Runs locally from one compose file — GitHub has the full stack, tests and chaos harness.",
+  },
+  {
     slug: "sharedroute",
     title: "SharedRoute",
     kicker: "Distributed Rate Limiter",
